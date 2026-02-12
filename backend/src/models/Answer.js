@@ -5,46 +5,44 @@ const answerSchema = new mongoose.Schema(
     user: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
-      required: true
+      required: true,
     },
 
     question: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Question",
-      required: true
+      required: true,
+    },
+
+    session: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "InterviewSession",
     },
 
     userAnswer: {
       type: String,
       required: true,
-      trim: true
+      trim: true,
     },
 
     scores: {
-      relevance: {
-        type: Number,
-        min: 0,
-        max: 100
-      },
-      sentiment: {
-        type: Number,
-        min: -1,
-        max: 1
-      },
-      confidence: {
-        type: Number,
-        min: 0,
-        max: 100
-      }
+      relevance: Number,
+      sentiment: String,
+      confidence: Number,
     },
-
-    feedback: {
-      type: String
-    }
+    skillBreakdown: {
+      technical_knowledge: Number,
+      communication: Number,
+      confidence: Number,
+      problem_solving: Number,
+    },
+    overallScore: {
+      type: Number,
+    },
   },
   {
-    timestamps: true
-  }
+    timestamps: true,
+  },
 );
 
 export default mongoose.model("Answer", answerSchema);

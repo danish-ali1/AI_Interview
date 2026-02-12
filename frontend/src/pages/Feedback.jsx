@@ -33,82 +33,62 @@ const Feedback = () => {
 
   return (
     <div className="max-w-4xl mx-auto p-6">
-      <h1 className="text-2xl font-bold mb-4">Interview Feedback</h1>
+      <h1 className="text-2xl font-bold mb-6">Interview Feedback</h1>
 
-      <div className="border p-4 rounded mb-4">
-        <p><strong>Session:</strong> {feedback.sessionId}</p>
-        <p><strong>Status:</strong> {feedback.status}</p>
-        <p><strong>Total Questions:</strong> {feedback.totalQuestions}</p>
-        <p><strong>Total Score:</strong> {feedback.totalScore}</p>
-        <p><strong>Average Score:</strong> {feedback.averageScore}</p>
+      <div className="bg-blue-50 border border-blue-200 p-6 rounded mb-6">
+        <h2 className="text-xl font-semibold mb-4">Performance Summary</h2>
+        <div className="grid grid-cols-2 gap-4 md:grid-cols-3">
+          <div>
+            <p className="text-gray-600 text-sm">Overall Score</p>
+            <p className="text-3xl font-bold text-blue-600">{feedback.summary?.overall ?? "-"}</p>
+          </div>
+          <div>
+            <p className="text-gray-600 text-sm">Technical Knowledge</p>
+            <p className="text-2xl font-bold">{feedback.summary?.technical_knowledge ?? "-"}</p>
+          </div>
+          <div>
+            <p className="text-gray-600 text-sm">Communication</p>
+            <p className="text-2xl font-bold">{feedback.summary?.communication ?? "-"}</p>
+          </div>
+          <div>
+            <p className="text-gray-600 text-sm">Confidence</p>
+            <p className="text-2xl font-bold">{feedback.summary?.confidence ?? "-"}</p>
+          </div>
+          <div>
+            <p className="text-gray-600 text-sm">Problem Solving</p>
+            <p className="text-2xl font-bold">{feedback.summary?.problem_solving ?? "-"}</p>
+          </div>
+        </div>
       </div>
 
       <div className="mb-6">
-        <h2 className="text-xl font-semibold mb-2">Recommendations</h2>
-        <ul className="list-disc pl-6">
-          {feedback.recommendations && feedback.recommendations.length > 0 ? (
-            feedback.recommendations.map((r, i) => <li key={i}>{r}</li>)
-          ) : (
-            <li>No recommendations</li>
-          )}
-        </ul>
-      </div>
-
-      <div className="mb-6">
-        <h2 className="text-xl font-semibold mb-2">Strengths</h2>
-        <div className="flex gap-4">
+        <h2 className="text-xl font-semibold mb-3">Your Strengths</h2>
+        <div className="bg-green-50 border border-green-200 rounded p-4">
           {feedback.strengths && feedback.strengths.length > 0 ? (
-            feedback.strengths.map((s) => (
-              <div key={s.questionId} className="border p-3 rounded">
-                <p className="text-sm">Question: {s.questionId}</p>
-                <p className="font-bold">Score: {s.score}</p>
-              </div>
-            ))
+            <ul className="list-disc pl-6 space-y-2">
+              {feedback.strengths.map((s, i) => (
+                <li key={i} className="text-gray-700">{s}</li>
+              ))}
+            </ul>
           ) : (
-            <div>No strengths identified</div>
+            <p className="text-gray-500">No strengths identified</p>
           )}
         </div>
       </div>
 
       <div className="mb-6">
-        <h2 className="text-xl font-semibold mb-2">Weaknesses</h2>
-        <div className="flex gap-4">
-          {feedback.weaknesses && feedback.weaknesses.length > 0 ? (
-            feedback.weaknesses.map((w) => (
-              <div key={w.questionId} className="border p-3 rounded">
-                <p className="text-sm">Question: {w.questionId}</p>
-                <p className="font-bold">Score: {w.score}</p>
-              </div>
-            ))
+        <h2 className="text-xl font-semibold mb-3">Areas for Improvement</h2>
+        <div className="bg-yellow-50 border border-yellow-200 rounded p-4">
+          {feedback.improvements && feedback.improvements.length > 0 ? (
+            <ul className="list-disc pl-6 space-y-2">
+              {feedback.improvements.map((i, idx) => (
+                <li key={idx} className="text-gray-700">{i}</li>
+              ))}
+            </ul>
           ) : (
-            <div>No weaknesses identified</div>
+            <p className="text-gray-500">No areas for improvement identified</p>
           )}
         </div>
-      </div>
-
-      <div>
-        <h2 className="text-xl font-semibold mb-2">Questions & Feedback</h2>
-        {feedback.questions && feedback.questions.length > 0 ? (
-          feedback.questions.map((q) => (
-            <div key={q.questionId} className="border p-4 rounded mb-3">
-              <p className="font-medium">{q.questionText || `Question ${q.questionId}`}</p>
-              <p className="text-sm mt-1"><strong>Your answer:</strong> {q.userAnswer}</p>
-              <div className="mt-2 flex gap-4 text-sm">
-                <div><strong>Relevance:</strong> {q.relevance ?? "-"}</div>
-                <div><strong>Completeness:</strong> {q.completeness ?? "-"}</div>
-                <div><strong>Sentiment:</strong> {q.sentiment ?? "-"}</div>
-                <div><strong>Score:</strong> {q.finalScore ?? "-"}</div>
-              </div>
-              {q.suggestions && q.suggestions.length > 0 && (
-                <ul className="list-disc pl-6 mt-2 text-sm">
-                  {q.suggestions.map((s, i) => <li key={i}>{s}</li>)}
-                </ul>
-              )}
-            </div>
-          ))
-        ) : (
-          <div>No per-question feedback available</div>
-        )}
       </div>
     </div>
   );

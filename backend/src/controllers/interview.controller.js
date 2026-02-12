@@ -1,39 +1,33 @@
 import Question from "../models/Question.js";
 import Answer from "../models/Answer.js";
 import InterviewSession from "../models/Interview.js";
-import { evaluateAnswer } from "../services/evaluation.service.js";
+import { evaluateAnswer } from "../services/nlp.service.js";
 
 export const startInterview = async (req, res) => {
   try {
     const { role, difficulty } = req.body;
     if (!role || !difficulty) {
-      return res
-        .status(400)
-        .json({
-          message: "Role and difficulty are required to start an interview.",
-        });
+      return res.status(400).json({
+        message: "Role and difficulty are required to start an interview.",
+      });
     }
     const questionExists = await Question.exists({ role, difficulty });
     if (!questionExists) {
-      return res
-        .status(404)
-        .json({
-          message:
-            "No questions available for the specified role and difficulty.",
-        });
+      return res.status(404).json({
+        message:
+          "No questions available for the specified role and difficulty.",
+      });
     }
     const session = await InterviewSession.create({
       user: req.user._id,
       role,
       difficulty,
     });
-    res
-      .status(201)
-      .json({
-        message: "Interview session started successfully",
-        sessionId: session._id,
-        status: session.status,
-      });
+    res.status(201).json({
+      message: "Interview session started successfully",
+      sessionId: session._id,
+      status: session.status,
+    });
   } catch (error) {
     console.error("Error starting interview session:", error);
     return res
@@ -100,40 +94,37 @@ export const submitAnswer = async (req, res) => {
         .json({ message: "Question already answered in this session." });
     }
 
-    // also ensure there is no stale duplicate Answer document
-    const existingAnswer = await Answer.findOne({ user: req.user._id, question: questionId });
-    // if (existingAnswer) {
-    //   return res.status(400).json({ message: "Answer already submitted for this question." });
-    // }
     const question = await Question.findById(questionId);
     if (!question) {
       return res.status(404).json({ message: "Question not found." });
     }
 
-    const evaluation = evaluateAnswer({
-      answer: userAnswer,
-      modelAnswer: question.modelAnswer,
-    });
+    const evaluation = await evaluateAnswer(question.modelAnswer, userAnswer);
 
-    // persist scores consistently inside `scores` and also keep `finalScore` top-level
-    await Answer.create({
+    const answer = await Answer.create({
       user: req.user._id,
       question: question._id,
+      session: sessionId,
       userAnswer,
       scores: {
-        relevance: evaluation.relevance,
-        confidence: evaluation.completeness,
-        // store sentiment as numeric in scores for compatibility, keep string top-level
-        sentiment: evaluation.sentiment === "positive" ? 1 : evaluation.sentiment === "negative" ? -1 : 0,
+        relevance: evaluation.semantic_similarity,
+        sentiment: evaluation.sentiment,
+        confidence: evaluation.confidence,
       },
-      sentiment: evaluation.sentiment,
-      finalScore: evaluation.finalScore,
+      skillBreakdown: evaluation.skills,
+      overallScore: evaluation.overall_score,
     });
 
-    session.answeredQuestions.push({ question: question._id, score: evaluation.finalScore });
-    session.totalScore += evaluation.finalScore;
+    session.answeredQuestions.push({
+      question: question._id,
+      score: answer.overallScore,
+    });
+    session.totalScore += answer.overallScore;
     await session.save();
-    res.json({ message: "Answer submitted successfully", score: evaluation.finalScore });
+    res.json({
+      message: "Answer submitted successfully",
+      score: evaluation.finalScore,
+    });
   } catch (error) {
     console.error("Error submitting answer:", error);
     return res
@@ -154,7 +145,7 @@ export const endInterview = async (req, res) => {
 
     if (session.status !== "completed") {
       return res.status(400).json({
-        message: "Interview not completed yet"
+        message: "Interview not completed yet",
       });
     }
 
@@ -174,159 +165,73 @@ export const endInterview = async (req, res) => {
   }
 };
 
-export const getInterviewFeedback = async (req, res) => {
+export const getFeedback = async (req, res) => {
   try {
     const { sessionId } = req.params;
-    const session = await InterviewSession.findById(sessionId).populate(
-      "answeredQuestions.question"
-    );
 
-    if (!session) {
-      return res.status(404).json({ message: "Session not found" });
+    const answers = await Answer.find({ session: sessionId });
+
+    if (!answers.length) {
+      return res.status(404).json({ message: "No answers found" });
     }
 
-    // only session owner or admin can fetch detailed feedback
-    if (
-      req.user.role !== "admin" &&
-      session.user.toString() !== req.user._id.toString()
-    ) {
-      return res.status(403).json({ message: "Forbidden" });
-    }
+    const total = answers.length;
 
-    const answeredQuestionIds = session.answeredQuestions.map((aq) =>
-      aq.question && aq.question._id ? aq.question._id.toString() : aq.question.toString()
-    );
+    const avgTechnical =
+      answers.reduce((sum, a) => sum + a.skillBreakdown.technical_knowledge, 0) / total;
 
-    const answers = await Answer.find({
-      user: session.user,
-      question: { $in: answeredQuestionIds },
-    }).populate("question", "questionText modelAnswer keywords");
+    const avgCommunication =
+      answers.reduce((sum, a) => sum + a.skillBreakdown.communication, 0) / total;
 
-    if (!answers || answers.length === 0) {
-      return res.json({
-        sessionId: session._id,
-        status: session.status,
-        message: "No answers found for this session",
-      });
-    }
+    const avgConfidence =
+      answers.reduce((sum, a) => sum + a.skillBreakdown.confidence, 0) / total;
 
-    const normalizeValue = (ansDoc, key) => {
-      if (!ansDoc) return null;
+    const avgProblemSolving =
+      answers.reduce((sum, a) => sum + a.skillBreakdown.problem_solving, 0) / total;
 
-      // direct top-level
-      if (Object.prototype.hasOwnProperty.call(ansDoc, key)) return ansDoc[key];
+    const overall =
+      answers.reduce((sum, a) => sum + a.overallScore, 0) / total;
 
-      // common alternatives mapping
-      if (key === "completeness") {
-        if (ansDoc.scores && Object.prototype.hasOwnProperty.call(ansDoc.scores, "completeness"))
-          return ansDoc.scores.completeness;
-        if (ansDoc.scores && Object.prototype.hasOwnProperty.call(ansDoc.scores, "confidence"))
-          return ansDoc.scores.confidence;
-        return null;
-      }
+    const strengths = [];
+    const improvements = [];
 
-      if (key === "relevance") {
-        if (ansDoc.scores && Object.prototype.hasOwnProperty.call(ansDoc.scores, "relevance"))
-          return ansDoc.scores.relevance;
-        return null;
-      }
+    if (avgTechnical > 80) strengths.push("Strong technical understanding.");
+    else improvements.push("Improve depth of technical explanations.");
 
-      if (key === "finalScore" || key === "score") {
-        if (Object.prototype.hasOwnProperty.call(ansDoc, "finalScore")) return ansDoc.finalScore;
-        if (Object.prototype.hasOwnProperty.call(ansDoc, "score")) return ansDoc.score;
-        if (ansDoc.scores && Object.prototype.hasOwnProperty.call(ansDoc.scores, "finalScore"))
-          return ansDoc.scores.finalScore;
-        return null;
-      }
+    if (avgCommunication > 80) strengths.push("Clear and structured communication.");
+    else improvements.push("Work on clarity and structure of answers.");
 
-      // fallback to scores[key]
-      if (ansDoc.scores && Object.prototype.hasOwnProperty.call(ansDoc.scores, key))
-        return ansDoc.scores[key];
+    if (avgConfidence > 80) strengths.push("Confident delivery.");
+    else improvements.push("Show more confidence in explanations.");
 
-      return null;
-    };
-
-    const questionFeedback = answers.map((a) => {
-      const q = a.question || null;
-      const relevance = normalizeValue(a, "relevance") ?? null;
-      const completeness = normalizeValue(a, "completeness") ?? null;
-      const finalScore = normalizeValue(a, "finalScore") ?? normalizeValue(a, "score") ?? null;
-      const sentimentLabel =
-        typeof a.sentiment === "string" ? a.sentiment : normalizeValue(a, "sentiment");
-
-      const suggestions = [];
-      if (relevance !== null && relevance < 50) {
-        if (q && q.keywords && q.keywords.length)
-          suggestions.push(
-            `Try to include keywords: ${q.keywords.slice(0, 5).join(", ")}`
-          );
-        else suggestions.push("Focus on matching the question keywords and intent.");
-      }
-      if (completeness !== null && completeness < 60) {
-        suggestions.push(
-          "Expand your answer with examples, trade-offs and complexity considerations."
-        );
-      }
-      if (sentimentLabel && typeof sentimentLabel === "string" && sentimentLabel === "negative") {
-        suggestions.push("Avoid negative phrasing; prefer constructive, confident language.");
-      }
-
-      return {
-        questionId: q ? q._id : a.question,
-        questionText: q ? q.questionText : undefined,
-        modelAnswer: q ? q.modelAnswer : undefined,
-        userAnswer: a.userAnswer,
-        relevance,
-        completeness,
-        sentiment: sentimentLabel,
-        finalScore,
-        suggestions,
-      };
-    });
-
-    // overall metrics
-    const totalQuestions = questionFeedback.length;
-    const totalScore = session.totalScore || questionFeedback.reduce((s, q) => s + (q.finalScore || 0), 0);
-    const averageScore = totalQuestions > 0 ? Number((totalScore / totalQuestions).toFixed(2)) : 0;
-
-    const strengths = [...questionFeedback]
-      .filter((q) => typeof q.finalScore === "number")
-      .sort((a, b) => b.finalScore - a.finalScore)
-      .slice(0, 3)
-      .map((q) => ({ questionId: q.questionId, score: q.finalScore }));
-
-    const weaknesses = [...questionFeedback]
-      .filter((q) => typeof q.finalScore === "number")
-      .sort((a, b) => a.finalScore - b.finalScore)
-      .slice(0, 3)
-      .map((q) => ({ questionId: q.questionId, score: q.finalScore }));
-
-    const recommendations = [];
-    if (averageScore >= 80) recommendations.push("Excellent performance — keep refining polish and edge-cases.");
-    else if (averageScore >= 60) recommendations.push("Good job — add more depth and examples to increase impact.");
-    else recommendations.push("Work on coverage and structure: use examples, trade-offs, and keywords.");
+    if (avgProblemSolving > 80) strengths.push("Good problem-solving approach.");
+    else improvements.push("Improve logical reasoning and structured thinking.");
 
     return res.json({
-      sessionId: session._id,
-      status: session.status,
-      totalScore,
-      totalQuestions,
-      averageScore,
-      questions: questionFeedback,
+      sessionId,
+      summary: {
+        overall: Number(overall.toFixed(2)),
+        technical_knowledge: Number(avgTechnical.toFixed(2)),
+        communication: Number(avgCommunication.toFixed(2)),
+        confidence: Number(avgConfidence.toFixed(2)),
+        problem_solving: Number(avgProblemSolving.toFixed(2))
+      },
       strengths,
-      weaknesses,
-      recommendations,
+      improvements
     });
+
   } catch (error) {
-    console.error("Error fetching interview feedback:", error);
-    res.status(500).json({ message: "Error fetching interview feedback" });
+    console.error(error);
+    res.status(500).json({ message: "Failed to generate feedback" });
   }
-}
+};
 
 export const getUserSessions = async (req, res) => {
   try {
     const sessions = await InterviewSession.find({ user: req.user._id })
-      .select("_id role difficulty status totalScore totalQuestions createdAt updatedAt")
+      .select(
+        "_id role difficulty status totalScore totalQuestions createdAt updatedAt",
+      )
       .sort({ createdAt: -1 });
 
     res.json({ sessions });
@@ -334,5 +239,4 @@ export const getUserSessions = async (req, res) => {
     console.error("Error fetching user sessions:", error);
     res.status(500).json({ message: "Error fetching user sessions" });
   }
-}
-
+};
