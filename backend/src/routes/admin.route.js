@@ -4,7 +4,6 @@ import { authorizeRoles } from "../middlewares/role.middleware.js";
 import {
   getAllUsers,
   getAllSessions,
-  getSessionDetails
 } from "../controllers/admin.controller.js";
 
 const router = express.Router();
@@ -23,11 +22,5 @@ router.get(
   getAllSessions
 );
 
-router.get(
-  "/sessions/:sessionId",
-  protectedRoute,
-  authorizeRoles("admin"),
-  getSessionDetails
-);
 
 export default router;

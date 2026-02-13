@@ -36,7 +36,7 @@ const Navbar = () => {
         ) : (
           <>
             <div className="text-sm border  bg-gray-300 rounded-2xl p-2">Hi {user.name}</div>
-            <Link to="/interview" className="text-sm border  bg-blue-300 rounded-2xl p-2 hover:bg-blue-400">Interview</Link>
+            <Link to="/admin" className="text-sm border  bg-blue-300 rounded-2xl p-2 hover:bg-blue-400">Admin Dashboard</Link>
             <Link to="/sessions" className="text-sm border  bg-blue-300 rounded-2xl p-2 hover:bg-blue-400">Sessions</Link>
             <button onClick={handleLogout} className="text-sm border  bg-blue-300 rounded-2xl p-2 hover:bg-blue-400 cursor-pointer">Logout</button>
           </>
