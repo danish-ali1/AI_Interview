@@ -46,7 +46,7 @@ const AdminDashboard = () => {
         Admin Dashboard
       </h1>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-10">
         
         <div
           onClick={() => setShowUsers((v) => !v)}
@@ -71,6 +71,16 @@ const AdminDashboard = () => {
           <p className="text-2xl font-semibold text-green-600 mt-2">
             Active
           </p>
+        </div>
+
+        <div className="bg-white rounded-xl shadow p-6 flex flex-col justify-center items-center">
+          <h3 className="text-gray-500 text-sm mb-4">Add Questions</h3>
+          <button
+            onClick={() => navigate("/add-question")}
+            className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
+          >
+            Go to Add Question
+          </button>
         </div>
 
       </div>

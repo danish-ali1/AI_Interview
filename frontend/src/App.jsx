@@ -9,6 +9,7 @@ import Feedback from "./pages/Feedback";
 import Sessions from "./pages/Sessions";
 import AdminDashboard from "./pages/AdminDashboard";
 import ProtectedRoute from "./routes/ProtectedRoute";
+import AddQuestion from "./pages/AddQuestion";
 import { Toaster } from "react-hot-toast";
 
 const App = () => {
@@ -25,6 +26,7 @@ const App = () => {
         <Route path="/feedback/:sessionId" element={<ProtectedRoute><Feedback /></ProtectedRoute>} />
         <Route path="/sessions" element={<ProtectedRoute><Sessions /></ProtectedRoute>} />
         <Route path="/admin" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
+        <Route path="/add-question" element={<ProtectedRoute><AddQuestion /></ProtectedRoute>} />
       </Routes>
     </>
   );
