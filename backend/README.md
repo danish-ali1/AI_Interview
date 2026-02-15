@@ -1,38 +1,51 @@
-AI Interview Preparation Platform (Phase 1)
+This backend application powers an AI-based interview evaluation system. It manages authentication, role-based access control, interview sessions, answer submission, and automated NLP-based evaluation. The system allows candidates to take interviews and receive structured scoring, while administrators manage the question bank and control interview content.
 
-This repository contains the backend implementation for a text-based interview simulation platform.
+The architecture is modular and organized to keep business logic separate from routing and configuration, making the application scalable and maintainable.
 
-The system allows users to authenticate, start an interview for a selected role, answer questions, and receive automated feedback based on basic answer evaluation logic.
+Tech Stack
 
-This project covers Phase 1 backend and core evaluation requirements.
+The backend is built using Node.js and Express.js. MongoDB is used as the database, with Mongoose for schema modeling and data management. Authentication is handled using JSON Web Tokens stored in HTTP-only cookies. The evaluation logic is implemented as a separate NLP service within the application.
 
-Tech Stack: Node.js,Express.js,MongoDb(Atlas),Mongoose,JWT Authentication
+Core Functionality
 
-Features Implemented: User signup, login, and logout, Protected interview routes, Interview session creation, Role-based question handling, Answer submission and storage, Automatic next-question flow,Basic answer relevance scoring, Interview progress tracking
+The system supports secure user authentication with role-based access control. Two roles exist in the application: candidate and admin. Candidates can start interview sessions, submit answers, and receive evaluation scores. Admin users can manage the question bank and access protected administrative routes.
 
-Interview Flow: at first the user needs to sign up and log in, then interview session can be started by selecting a role and a session id is generated.Questions are served one at a time and user submits an answer for each question.Answer is evaluated and stored then next question is returned automatically.
-Interview ends after all questions are answered
+Interview sessions are created for candidates, and each submitted answer is evaluated automatically. The evaluation result is stored along with the answer and linked to the corresponding session.
 
-Answer Evaluation Logic: As of now I am  using a simple rule-based evaluation approach.Each question contains a list of predefined keywords.User answers are checked against these keywords to calculate a relevance score.This logic provides basic automated feedback and will be extended in later phases.
+NLP Evaluation
 
-Answer evaluation logic is abstracted into a service layer.
-Each answer is scored based on: Keyword matching, Similarity with model answer, Sentiment analysis (rule-based)
+The backend includes a custom NLP service that evaluates each submitted answer. The evaluation calculates three values: relevance, sentiment, and confidence.
 
-Future enhancement:Python-based NLP evaluation
+Relevance measures how closely the user’s answer aligns with the model answer. This is determined using a combination of keyword matching and semantic similarity techniques, focusing on meaning rather than exact wording.
 
-Questions are seeded separately using a dedicated seed script.
-This allows easy reset or extension of the question bank without affecting interview sessions.
+Sentiment analysis classifies the tone of the response as positive, neutral, or negative. While sentiment does not determine correctness, it provides additional communication insight.
 
+Confidence scoring estimates how clearly and directly the answer is written. Structured explanations and precise technical language generally result in higher confidence scores.
 
+The evaluation result is stored inside the scores field of the Answer model.
 
+Project Structure
 
+The backend follows a structured organization. Route definitions are separated from controllers, and controllers delegate evaluation logic to services. Database schemas are defined in models, authentication and authorization logic is placed in middleware, and configuration is managed separately. This structure ensures clarity and maintainability as the system grows.
 
+Setup Instructions
 
+Clone the repository and install dependencies using npm install. Create a .env file in the root directory and define the required environment variables:
 
+PORT=5000
+MONGO_URI=your_mongodb_connection_string
+JWT_SECRET=your_secret_key
 
+After configuration, start the development server using npm run dev. The backend will run locally on the configured port.
 
+API Structure
 
+The backend exposes authentication routes for user registration, login, and logout. Interview routes handle session creation, answer submission, and feedback retrieval. Admin routes are protected and allow management of questions in the system. All protected endpoints require valid authentication.
 
+Security
 
+Passwords are hashed before being stored in the database. JWT tokens are stored in HTTP-only cookies to reduce exposure to client-side scripts. Role-based middleware restricts access to administrative functionality. Basic validation and structured error handling are implemented to ensure reliable API behavior.
 
+Future Improvements
 
+The NLP evaluation layer can be enhanced with more advanced semantic models, refined confidence detection, and role-specific scoring logic. The architecture allows these improvements without major changes to the existing API structure.

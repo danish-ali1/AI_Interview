@@ -1,33 +1,47 @@
-# AI Interview Prep Platform 
+AI Interview System is a full-stack web application that simulates technical interviews and evaluates candidate answers automatically. The system allows candidates to take structured interviews and receive AI-based evaluation, while administrators manage the question bank and control interview content.
 
-An AI-powered interview preparation platform that simulates real interview sessions, evaluates answers, and provides structured feedback based on relevance, sentiment, and completeness.
+The application is divided into two main parts: a backend API that handles authentication, session management, evaluation logic, and data storage, and a frontend application that provides the user interface for candidates and administrators.
 
-# Features (Phase 1)
+Features
 
-# Authentication
-- User signup & login (JWT + cookies)
-- Protected routes (backend & frontend)
+The system supports secure authentication with role-based access control. Candidates can start interview sessions, submit answers, and receive structured feedback based on relevance, sentiment, and confidence scoring. Administrators can add and manage interview questions, including role, difficulty level, model answers, and keywords.
 
-# Interview Flow
-- Role-based interviews (Frontend, Backend, Full-Stack, Data Analyst)
-- Difficulty selection (Easy, Medium, Hard)
-- Session-based interview flow
-- One question at a time
+The evaluation logic is powered by a custom NLP service that compares user answers with model answers using semantic similarity and keyword matching techniques.
 
-# Answer Evaluation (Rule-based – Phase 1)
-- Relevance scoring
-- Sentiment analysis
-- Completeness evaluation
-- Total score calculation per session
+Tech Stack
 
-# Feedback
-- Detailed feedback per question
-- Overall interview summary
-- Average & total score
+Backend
+Node.js
+Express.js
+MongoDB
+Mongoose
+JWT Authentication (HTTP-only cookies)
 
-## Live Demo
+Frontend
+React (Vite)
+Axios
+Tailwind CSS
 
-The application is live here:
+System Roles
 
- https://ai-interview-delta-blush.vercel.app
+Candidate users can take interviews and view their evaluation results.
 
+Admin users can access protected routes to manage the question bank and control interview content.
+
+Demo Credentials
+
+The following demo credentials are provided for testing the system.
+
+Admin Login
+
+Email: admin21@gmail.com
+
+Password: admin21
+
+Candidate Login
+
+Email: eren21@gmail.com
+
+Password: eren21
+
+These accounts are intended for demonstration and evaluation purposes only.

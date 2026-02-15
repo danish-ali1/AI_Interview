@@ -4,17 +4,15 @@ from app.services.sentiment_service import analyze_sentiment
 
 def evaluate_answer(model_answer: str, user_answer: str):
 
-    # 1️⃣ Technical knowledge (semantic similarity)
     similarity_score = calculate_similarity(model_answer, user_answer)
     technical_score = round(similarity_score * 100, 2)
 
-    # 2️⃣ Sentiment & confidence
+    
     sentiment_result = analyze_sentiment(user_answer)
     sentiment_label = sentiment_result["label"]
     confidence_score = round(sentiment_result["confidence"] * 100, 2)
 
-    # 3️⃣ Communication score
-    # Simple logic: neutral or positive tone scores better
+
     if sentiment_label == "positive":
         communication_score = 85
     elif sentiment_label == "neutral":
@@ -22,11 +20,11 @@ def evaluate_answer(model_answer: str, user_answer: str):
     else:
         communication_score = 50
 
-    # 4️⃣ Problem solving score (based on answer length & similarity)
-    length_factor = min(len(user_answer.split()) / 50, 1)  # cap at 50 words
+    
+    length_factor = min(len(user_answer.split()) / 50, 1)  
     problem_solving_score = round((similarity_score * 0.7 + length_factor * 0.3) * 100, 2)
 
-    # 5️⃣ Overall score
+    
     overall_score = round(
         (technical_score * 0.4 +
          communication_score * 0.2 +

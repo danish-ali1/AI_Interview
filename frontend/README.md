@@ -1,16 +1,43 @@
-# React + Vite
+This frontend application provides the user interface for the AI-based interview evaluation system. It allows candidates to take interviews, submit answers, and view evaluation results, while administrators can manage questions and monitor system activity.
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+The frontend communicates with the backend API and handles authentication using cookie-based sessions. It is designed with a clean structure and responsive layout to provide a smooth user experience.
 
-Currently, two official plugins are available:
+Tech Stack
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+The application is built using React with Vite as the development environment. Axios is used for API communication. Tailwind CSS is used for styling and layout. Routing is managed on the client side to separate candidate and admin views.
 
-## React Compiler
+Core Functionality
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+Users can register and log in through authentication forms. After login, access is controlled based on user role. Candidates are directed to interview-related pages where they can start sessions, answer questions, and view feedback.
 
-## Expanding the ESLint configuration
+Admin users have access to a dashboard where they can add and manage questions. The interface separates administrative functionality from candidate features to ensure proper role-based access.
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+The frontend communicates securely with the backend using HTTP-only cookies for authentication. Protected routes prevent unauthorized users from accessing restricted pages.
+
+Application Flow
+
+After logging in, the user is redirected based on their role. Candidates can begin an interview session, answer questions one by one, and view their evaluation results once completed. Scores such as relevance, sentiment, and confidence are displayed in a structured format.
+
+Admins can access a dashboard that allows them to create new questions by specifying role, difficulty, model answer, and keywords. These questions are then available for interview sessions.
+
+Project Structure
+
+The frontend follows a component-based architecture. Pages are organized by role and functionality. Reusable components are separated from page-level logic. API calls are centralized using an Axios instance configuration to maintain consistency across requests.
+
+State management is handled locally within components where possible, keeping the structure simple and maintainable.
+
+Setup Instructions
+
+Clone the repository and install dependencies using npm install. Start the development server using npm run dev. By default, the application runs on:
+
+http://localhost:5173
+
+Ensure the backend server is running and properly configured to allow CORS requests from the frontend.
+
+Security
+
+Authentication relies on HTTP-only cookies set by the backend. The frontend does not manually store tokens in local storage. Protected routes check authentication state before rendering sensitive components. Role-based navigation ensures that admin and candidate views remain isolated.
+
+Future Improvements
+
+The interface can be enhanced with improved analytics visualization, better session history tracking, advanced filtering for question management, and more refined UI feedback states. The structure allows for these improvements without major refactoring.
