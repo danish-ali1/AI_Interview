@@ -45,3 +45,5 @@ Email: eren21@gmail.com
 Password: eren21
 
 These accounts are intended for demonstration and evaluation purposes only.
+
+The application is live at https://ai-interview-delta-blush.vercel.app
