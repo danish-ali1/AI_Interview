@@ -127,9 +127,18 @@ export const submitAnswer = async (req, res) => {
     });
   } catch (error) {
     console.error("Error submitting answer:", error);
+    // Check if error is from NLP service evaluation
+    if (error.message && error.message.includes("NLP service") || error.message.includes("evaluate")) {
+      return res
+        .status(503)
+        .json({ 
+          message: error.message,
+          error: "NLP Service unavailable - Please try again later"
+        });
+    }
     return res
       .status(500)
-      .json({ message: "Internal server error in answer controller" });
+      .json({ message: "Internal server error in answer controller", error: error.message });
   }
 };
 

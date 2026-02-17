@@ -321,105 +321,105 @@ const questions = [
     keywords: ["distributed", "network", "scalability"]
   },
   {
-    role: "data-analyst",
+    role: "dataanalyst",
     difficulty: "easy",
     questionText: "What is data analysis?",
     modelAnswer: "Process of inspecting and interpreting data.",
     keywords: ["data", "analysis", "insights"]
   },
   {
-    role: "data-analyst",
+    role: "dataanalyst",
     difficulty: "easy",
     questionText: "What is Excel used for?",
     modelAnswer: "Excel is used for data organization and analysis.",
     keywords: ["excel", "spreadsheet"]
   },
   {
-    role: "data-analyst",
+    role: "dataanalyst",
     difficulty: "easy",
     questionText: "What is SQL?",
     modelAnswer: "SQL is used to query databases.",
     keywords: ["sql", "database", "query"]
   },
   {
-    role: "data-analyst",
+    role: "dataanalyst",
     difficulty: "easy",
     questionText: "What is a dataset?",
     modelAnswer: "A collection of related data.",
     keywords: ["dataset", "data"]
   },
   {
-    role: "data-analyst",
+    role: "dataanalyst",
     difficulty: "easy",
     questionText: "What is visualization?",
     modelAnswer: "Graphical representation of data.",
     keywords: ["charts", "graphs", "visualization"]
   },
   {
-    role: "data-analyst",
+    role: "dataanalyst",
     difficulty: "medium",
     questionText: "What is data cleaning?",
     modelAnswer: "Removing or fixing incorrect data.",
     keywords: ["cleaning", "data", "quality"]
   },
   {
-    role: "data-analyst",
+    role: "dataanalyst",
     difficulty: "medium",
     questionText: "What is normalization?",
     modelAnswer: "Scaling data to a standard range.",
     keywords: ["normalization", "scaling"]
   },
   {
-    role: "data-analyst",
+    role: "dataanalyst",
     difficulty: "medium",
     questionText: "What is pivot table?",
     modelAnswer: "Tool to summarize large datasets.",
     keywords: ["pivot", "summary", "excel"]
   },
   {
-    role: "data-analyst",
+    role: "dataanalyst",
     difficulty: "medium",
     questionText: "Explain descriptive statistics.",
     modelAnswer: "Mean, median, mode describe data.",
     keywords: ["mean", "median", "mode"]
   },
   {
-    role: "data-analyst",
+    role: "dataanalyst",
     difficulty: "medium",
     questionText: "What is correlation?",
     modelAnswer: "Relationship between two variables.",
     keywords: ["correlation", "relationship"]
   },
   {
-    role: "data-analyst",
+    role: "dataanalyst",
     difficulty: "hard",
     questionText: "What is hypothesis testing?",
     modelAnswer: "Statistical method to validate assumptions.",
     keywords: ["hypothesis", "testing", "statistics"]
   },
   {
-    role: "data-analyst",
+    role: "dataanalyst",
     difficulty: "hard",
     questionText: "Explain regression analysis.",
     modelAnswer: "Predicts relationship between variables.",
     keywords: ["regression", "prediction"]
   },
   {
-    role: "data-analyst",
+    role: "dataanalyst",
     difficulty: "hard",
     questionText: "What is p-value?",
     modelAnswer: "Probability that results occurred by chance.",
     keywords: ["p-value", "statistics"]
   },
   {
-    role: "data-analyst",
+    role: "dataanalyst",
     difficulty: "hard",
     questionText: "What is ETL process?",
     modelAnswer: "Extract, Transform, Load data pipeline.",
     keywords: ["etl", "pipeline", "data"]
   },
   {
-    role: "data-analyst",
+    role: "dataanalyst",
     difficulty: "hard",
     questionText: "Explain time series analysis.",
     modelAnswer: "Analyzing data points over time.",

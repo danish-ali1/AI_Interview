@@ -4,7 +4,7 @@ const questionSchema = new mongoose.Schema(
   {
     role: {
       type: String,
-      enum: ["frontend", "backend", "fullstack", "data-analyst"],
+      enum: ["frontend", "backend", "fullstack", "dataanalyst"],
       required: true,
     },
     difficulty: {

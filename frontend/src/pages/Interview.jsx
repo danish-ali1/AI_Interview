@@ -98,7 +98,7 @@ const Interview = () => {
           <option value="frontend">Frontend</option>
           <option value="backend">Backend</option>
           <option value="fullstack">FullStack</option>
-          <option value="data_analyst">Data Analyst</option>
+          <option value="dataanalyst">DataAnalyst</option>
         </select>
         <select
           value={difficulty}
